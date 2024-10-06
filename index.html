@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WeatherMech</title>
+    <link rel="icon" href="logo.ico" type="image/x-icon">
+    <style>
+        body{
+            background-image: url(fondo\ \(2\).jpg);
+            background-size: 100%;
+            background-position: auto;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        #container {
+            margin-top: 20px;
+        }
+        canvas {
+            border: 1px solid black;
+        }
+        .slider-container {
+            margin: 20px 0;
+        }
+        h1{
+            color: azure;
+        }
+        div{
+            color: azure;
+        }
+    </style>
+</head>
+<body>
+    <h1>Simulacion clima Mazatlán 2025.</h1>
+    <div id="container">
+        <canvas id="climateCanvas" width="500" height="500"></canvas>
+    </div>
+
+    <div class="slider-container">
+        <label for="monthSlider">Mes:</label>
+        <input type="range" id="monthSlider" min="1" max="12" value="1" oninput="updateMonth()">
+        <span id="monthLabel">1</span>
+    </div>
+
+    <button onclick="showTemperature()">Temperatura</button>
+    <button onclick="showZones()">Zonas de refugio</button>
+    <button onclick="showRecommendations()">Recomendaciones</button>
+
+    <script>
+        const canvas = document.getElementById('climateCanvas');
+        const ctx = canvas.getContext('2d');
+        const img = new Image();
+        img.src = 'mapa.jpg'; // Aquí se coloca la ruta de la imagen climática.
+        
+        img.onload = function() {
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            updateMonth(); // Inicializa con el mes 1.
+        };
+
+        function updateMonth() {
+            const month = document.getElementById('monthSlider').value;
+            document.getElementById('monthLabel').textContent = month;
+            
+            // Redibujar la imagen original antes de aplicar cambios de color
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            
+            // Obtener los datos de la imagen del canvas
+            let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            let data = imageData.data;
+            
+            // Modificar los valores de los píxeles según el mes (cambiar los canales RGB)
+            for (let i = 0; i < data.length; i += 4) {
+                // Acceder a los canales RGBA de cada píxel
+                let r = data[i];     // Rojo
+                let g = data[i + 1]; // Verde
+                let b = data[i + 2]; // Azul
+                
+                // Aplicar diferentes cambios de color según el mes
+                if (month == 1 || month == 2 || month == 12) {
+                    // Más frío (azul)
+                    data[i] = r * 0.8; // Reducir el rojo
+                    data[i + 1] = g * 0.8; // Reducir el verde
+                    data[i + 2] = b * 1.2; // Aumentar el azul
+                } else if (month >= 3 && month <= 8) {
+                    // Más cálido (rojo)
+                    data[i] = r * 1.2; // Aumentar el rojo
+                    data[i + 1] = g * 0.8; // Reducir el verde
+                    data[i + 2] = b * 0.8; // Reducir el azul
+                } else {
+                    // Otoño (más verde y marrón)
+                    data[i] = r * 1.0; // Mantener el rojo
+                    data[i + 1] = g * 1.2; // Aumentar el verde
+                    data[i + 2] = b * 0.8; // Reducir el azul
+                }
+            }
+            
+            // Poner la imagen modificada de nuevo en el canvas
+            ctx.putImageData(imageData, 0, 0);
+        }
+
+        function showTemperature() {
+            const month = document.getElementById('monthSlider').value; // Obtener el mes del slider
+            let message = '';
+
+            switch (parseInt(month)) {
+                case 1:
+                    message = "Temperatura:\n Promedio: 19.3°.\n Máxima: 31.2°.\n Mínima: 9.2°.";
+                    break;
+                case 2:
+                    message = "Temperatura:\n Promedio: 19.7°.\n Máxima: 31.5°.\n Mínima: 8°.";
+                    break;
+                case 3:
+                    message = "Temperatura:\n Promedio: 20.3°.\n Máxima: 32°.\n Mínima: 9.7°.";
+                    break;
+                case 4:
+                    message = "Temperatura:\n Promedio: 22.2°.\n Máxima: 33°.\n Mínima: 11°.";
+                    break;
+                case 5:
+                    message = "Temperatura:\n Promedio: 24.9°.\n Máxima: 33.8°.\n Mínima: 13.6°.";
+                    break;
+                case 6:
+                    message = "Temperatura:\n Promedio: 27.6°.\n Máxima: 34.7°.\n Mínima: 21°.";
+                    break;
+                case 7:
+                    message = "Temperatura:\n Promedio: 28.8°.\n Máxima: 35°.\n Mínima: 22.4°.";
+                    break;
+                case 8:
+                    message = "Temperatura:\n Promedio: 28.6°.\n Máxima: 34°.\n Mínima: 22.4°.";
+                    break;
+                case 9:
+                    message = "Temperatura:\n Promedio: 28°.\n Máxima: 34.1°.\n Mínima: 22°.";
+                    break;
+                case 10:
+                    message = "Temperatura:\n Promedio: 27.1°.\n Máxima: 34.4°.\n Mínima: 17.5°.";
+                    break;
+                case 11:
+                    message = "Temperatura:\n Promedio: 24.1°.\n Máxima: 33.2°.\n Mínima: 15.2°.";
+                    break;
+                case 12:
+                    message = "Temperatura:\n Promedio: 20.6°.\n Máxima: 32.8°.\n Mínima: 10.1°.";
+                    break;
+                default:
+                    message = "Mes no válido.";
+                    break;
+            }
+            alert(message);
+        }
+
+        function showZones() {
+            const month = document.getElementById('monthSlider').value; // Obtener el mes del slider
+            let message = '';
+
+            if (month >= 7 && month < 12) {
+                message = 'Lista de refugios:\n Polideportivo UAS.\n ICO.\n Club de Leones.\n Conalep I.';
+            } else {
+                message = "Las condiciones ambientales suelen ser estables.";
+            }
+            alert(message);
+        }
+
+        function showRecommendations() {
+            const month = document.getElementById('monthSlider').value; // Obtener el mes del slider
+            let message = '';
+
+            if (month == 1 || month == 2 || month == 11 || month == 12) {
+                message = 'Recomendaciones: Abrígate.\n Mantente en lugares cálidos.\n Reconoce los síntomas tempranos de enfermedades respiratorias.';
+            } else {
+                message = 'Recomendaciones:\n Evita exponerte al sol.\n Hidrátate.\n Reconoce los síntomas de un golpe de calor.';
+            }
+            alert(message);
+        }
+    </script>
+</body>
+</html>
